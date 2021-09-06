@@ -8,6 +8,20 @@ class BasePlugin:
     def onStart(self, Devices):
         Domoticz.Log("onStart...Ex")
 
+        for x in list(Devices):
+            for y in list(Devices[x].Units):
+                Domoticz.Log("Loading Devices[%s].Units[%s]: %s" %( x, y, Devices[x].Units[y].Name))
+                deviceid = len(Devices)
+                Domoticz.Unit(Name="Counter_%s" %deviceid, DeviceID=str(deviceid), Unit=1, TypeName="Counter").Create()
+                Domoticz.Log("Created device: "+Devices[str(deviceid)].Units[1].Name)
+
+                Devices[ str(deviceid) ].Units[ 1 ].nValue = 0
+                Devices[ str(deviceid) ].Units[ 1 ].sValue = '0'
+                Devices[ str(deviceid) ].Units[ 1 ].Update()
+
+
+
+
     def onStop(self):
         Domoticz.Debug("onStop...Ex")
                 
@@ -22,6 +36,14 @@ class BasePlugin:
 
     def onHeartbeat(self, Devices):
         Domoticz.Log("Heartbeating... Ex")
+        for x in Devices:
+            for y in Devices[x].Units:
+                Domoticz.Log("%s:%s" % (Devices[ x ].Units[ y].nValue, Devices[ x ].Units[ y].sValue))
+                Devices[ x ].Units[ y ].nValue = 0
+                Devices[ x ].Units[ y ].sValue = '%s' %(int( Devices[ x ].Units[ y ].sValue ) + 1)
+                Devices[ x ].Units[ y ].Update()
+
+
 
     def onCommand( self, DeviceID, Unit, Command, Level, Color ):
         Domoticz.Log("onCommand... Ex")
