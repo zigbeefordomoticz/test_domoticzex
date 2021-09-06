@@ -1,12 +1,15 @@
 import DomoticzEx as Domoticz
 
-class BasePluginEx:
+class BasePlugin:
 
     def __init__( self ):
         self.count = 0
  
-    def onStart(self):
+    def onStart(self, Devices):
         Domoticz.Log("onStart...Ex")
+
+    def onStop(self):
+        Domoticz.Debug("onStop...Ex")
                 
     def onConnect(self, Connection, Status, Description):
         if (Status == 0):
@@ -17,7 +20,7 @@ class BasePluginEx:
     def onMessage(self, Connection, Data):
         Domoticz.Log("onMessage called for connection: '"+Connection.Name+"'")
 
-    def onHeartbeat(self):
+    def onHeartbeat(self, Devices):
         Domoticz.Log("Heartbeating... Ex")
 
     def onCommand( self, DeviceID, Unit, Command, Level, Color ):

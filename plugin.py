@@ -22,14 +22,16 @@
 
 try:
     import DomoticzEx as Domoticz
-    from BasePluginEx import BasePluginEx
+    from BasePluginEx import BasePlugin
     domoticzex = True
 
 except:
-    print("Imprt DomoticzLegacy")
     import Domoticz
     domoticzex = False
     from BasePlugin import BasePlugin
+
+domoticzex = False
+
 
 global _plugin
 if domoticzex:
@@ -39,7 +41,7 @@ else:
 
 def onStart():
     global _plugin
-    _plugin.onStart()
+    _plugin.onStart( Devices )
 
 
 def onStop():
@@ -81,4 +83,4 @@ def onDisconnect(Connection):
 
 def onHeartbeat():
     global _plugin
-    _plugin.onHeartbeat()
+    _plugin.onHeartbeat( Devices )
