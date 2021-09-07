@@ -16,7 +16,7 @@ class BasePlugin:
         unit = len(Devices) + 1
         Domoticz.Device(Name="Counter_%s" % unit, Unit=unit, Type=113).Create()
         Domoticz.Log("Created device: %s" % Devices[unit].Name)
-        Devices[x].Update(nValue=0, sValue="0")
+        Devices[ unit ].Update(nValue=0, sValue="0")
 
     def onStop(self):
         Domoticz.Log("onStop...Legacy")

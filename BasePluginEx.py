@@ -1,5 +1,7 @@
 import DomoticzEx as Domoticz
 
+from domoTools import get_widget_attributes, write_attribute_device
+
 
 class BasePlugin:
     def __init__(self):
@@ -14,18 +16,20 @@ class BasePlugin:
                     "Loading Devices[%s].Units[%s]: %s"
                     % (x, y, Devices[x].Units[y].Name)
                 )
-                deviceid = len(Devices)
-                Domoticz.Unit(
-                    Name="Counter_%s" % deviceid,
-                    DeviceID=str(deviceid),
-                    Unit=1,
-                    TypeName="Counter",
-                ).Create()
-                Domoticz.Log("Created device: " + Devices[str(deviceid)].Units[1].Name)
+        deviceid = len(Devices)
+        Domoticz.Unit(
+            Name="Counter_%s" % deviceid,
+            DeviceID=str(deviceid),
+            Unit=1,
+            TypeName="Counter",
+        ).Create()
+        Domoticz.Log("Created device: " + Devices[str(deviceid)].Units[1].Name)
 
-                Devices[str(deviceid)].Units[1].nValue = 0
-                Devices[str(deviceid)].Units[1].sValue = "0"
-                Devices[str(deviceid)].Units[1].Update()
+        attribute_dict = {
+            "nValue": 0, 
+            "sValue": '1'
+        }
+        write_attribute_device(self, Devices, str(deviceid), 1, attribute_dict)
 
     def onStop(self):
         Domoticz.Debug("onStop...Ex")
@@ -51,11 +55,13 @@ class BasePlugin:
                 Domoticz.Log(
                     "%s:%s" % (Devices[x].Units[y].nValue, Devices[x].Units[y].sValue)
                 )
-                Devices[x].Units[y].nValue = 0
-                Devices[x].Units[y].sValue = "%s" % (
-                    int(Devices[x].Units[y].sValue) + 1
-                )
-                Devices[x].Units[y].Update(Log=True)
+
+                attribute_dict = {
+                    'nValue': 0,
+                    'sValue': str(int(get_widget_attributes(self, Devices, x, y, "sValue")["sValue"]) + 1)
+                }
+
+                write_attribute_device(self, Devices, x, y, attribute_dict)
 
     def onCommand(self, DeviceID, Unit, Command, Level, Color):
         Domoticz.Log("onCommand... Ex")

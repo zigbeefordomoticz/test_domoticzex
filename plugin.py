@@ -60,7 +60,7 @@ if domoticzex:
 
     def onCommand(Unit, Command, Level, Hue):
         global _plugin
-        _plugin.onCommand(DeviceID, Unit, Command, Level, Color)
+        _plugin.onCommand(DeviceID, Unit, Command, Level, Hue)
 
 
 else:
