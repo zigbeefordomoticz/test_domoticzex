@@ -23,10 +23,12 @@
 try:
     import DomoticzEx as Domoticz
     from BasePluginEx import BasePlugin
+
     domoticzex = True
 
 except:
     import Domoticz
+
     domoticzex = False
     from BasePlugin import BasePlugin
 
@@ -39,24 +41,30 @@ if domoticzex:
 else:
     _plugin = BasePlugin()
 
+
 def onStart():
     global _plugin
-    _plugin.onStart( Devices )
+    _plugin.onStart(Devices)
 
 
 def onStop():
     global _plugin
     _plugin.onStop()
 
+
 if domoticzex:
-    def onDeviceRemoved(DeviceID,Unit):
+
+    def onDeviceRemoved(DeviceID, Unit):
         global _plugin
         _plugin.onDeviceRemoved(DeviceID, Unit)
 
     def onCommand(Unit, Command, Level, Hue):
         global _plugin
         _plugin.onCommand(DeviceID, Unit, Command, Level, Color)
+
+
 else:
+
     def onDeviceRemoved(Unit):
         global _plugin
         _plugin.onDeviceRemoved(Unit)
@@ -83,4 +91,4 @@ def onDisconnect(Connection):
 
 def onHeartbeat():
     global _plugin
-    _plugin.onHeartbeat( Devices )
+    _plugin.onHeartbeat(Devices)
