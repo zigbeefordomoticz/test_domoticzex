@@ -20,31 +20,106 @@
 </plugin>
 """
 
+
 try:
     import DomoticzEx as Domoticz
-    from BasePluginEx import BasePlugin
-
     domoticzex = True
 
 except:
     import Domoticz
-
     domoticzex = False
-    from BasePlugin import BasePlugin
 
-domoticzex = False
+
+from domoTools import get_widget_attributes, write_attribute_device, create_widget
+
+
+class BasePlugin:
+
+    def __init__(self):
+        self.count = 0
+
+    def onStart(self):
+        Domoticz.Log("onStart...")
+
+        if not domoticzex:
+            unit = len(Devices)+1
+        else:
+            unit = 1
+
+        deviceid = len(Devices)+1
+        create_widget(self, Devices, deviceid, unit)
+
+        # Initialise Value
+        attribute_dict = {
+            "nValue": 0, 
+            "sValue": '1'
+        }
+        write_attribute_device(self, Devices, str(deviceid), unit, attribute_dict)
+
+    def onStop(self):
+        Domoticz.Debug("onStop...")
+
+    def onConnect(self, Connection, Status, Description):
+        if Status == 0:
+            Domoticz.Log("Successful connect to: " + Connection.Address)
+        else:
+            Domoticz.Log(
+                "Failed to connect to: "
+                + Connection.Address
+                + ", Description: "
+                + Description
+            )
+
+    def onMessage(self, Connection, Data):
+        Domoticz.Log("onMessage called for connection: '" + Connection.Name + "'")
+
+    def onHeartbeat(self):
+        Domoticz.Log("Heartbeating... ")
+
+        if not domoticzex:
+            # Legacy
+            for x in Devices:
+                attribute_dict = {
+                    'nValue': 0,
+                    'sValue': str(int(get_widget_attributes(self, Devices, None, x, "sValue")["sValue"]) + 1)
+                }
+                write_attribute_device(self, Devices, None, x, attribute_dict)
+
+        else:
+
+            for x in Devices:
+                for y in Devices[x].Units:
+                    Domoticz.Log(
+                        "%s:%s" % (Devices[x].Units[y].nValue, Devices[x].Units[y].sValue)
+                    )
+
+                    attribute_dict = {
+                        'nValue': 0,
+                        'sValue': str(int(get_widget_attributes(self, Devices, x, y, "sValue")["sValue"]) + 1)
+                    }
+
+                    write_attribute_device(self, Devices, x, y, attribute_dict)
+
+    def onCommand_Ex(self, DeviceID, Unit, Command, Level, Color):
+        Domoticz.Log("onCommand... Ex")
+
+    def onCommand_Legacy(self, Unit, Command, Level, Color):
+        Domoticz.Log("onCommand... Legacy")
+
+    def onDeviceRemoved(self, DeviceID, Unit):
+        Domoticz.Log("onDeviceRemoved... Ex")
+
+    def onDeviceRemoved_Legacy(self, Unit):
+        Domoticz.Log("onDeviceRemoved... Legacy")
 
 
 global _plugin
-if domoticzex:
-    _plugin = BasePluginEx()
-else:
-    _plugin = BasePlugin()
+_plugin = BasePlugin()
 
 
 def onStart():
     global _plugin
-    _plugin.onStart(Devices)
+    _plugin.onStart()
 
 
 def onStop():
@@ -53,7 +128,7 @@ def onStop():
 
 
 if domoticzex:
-
+    # Exented
     def onDeviceRemoved(DeviceID, Unit):
         global _plugin
         _plugin.onDeviceRemoved(DeviceID, Unit)
@@ -62,9 +137,8 @@ if domoticzex:
         global _plugin
         _plugin.onCommand(DeviceID, Unit, Command, Level, Hue)
 
-
 else:
-
+    # Legacy
     def onDeviceRemoved(Unit):
         global _plugin
         _plugin.onDeviceRemoved(Unit)
@@ -91,4 +165,4 @@ def onDisconnect(Connection):
 
 def onHeartbeat():
     global _plugin
-    _plugin.onHeartbeat(Devices)
+    _plugin.onHeartbeat()

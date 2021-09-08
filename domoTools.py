@@ -1,10 +1,8 @@
 try:
     import DomoticzEx as Domoticz
-
     domoticzex = True
 except:
     import Domoticz
-
     domoticzex = False
 
 
@@ -16,6 +14,46 @@ LIST_OF_WIDGET_ATTRIBUTES = (
     "Color",
     "TimedOut",
 )
+
+
+def create_widget(self, Devices , deviceid, unit):
+
+    list_widget( self, Devices )
+    if not domoticzex:
+        # Legacy
+        Domoticz.Device(Name="Counter_%s" % unit, Unit=unit, Type=113).Create()
+
+    else:
+        # Ex
+        Domoticz.Unit(
+            Name="Counter_%s" % deviceid,
+            DeviceID=str(deviceid),
+            Unit=unit,
+            TypeName="Counter",
+        ).Create()
+        Domoticz.Log("Created device: " + Devices[str(deviceid)].Units[unit].Name)
+
+
+
+
+def list_widget( self, Devices ):
+
+    if not domoticzex:
+        # Legacy
+        for x in list(Devices):
+            Domoticz.Log(
+                "Loading Devices[%s]: %s"
+                % (x, Devices[x].Name)
+            )
+    else:
+        # Ex
+        for x in list(Devices):
+            for y in list(Devices[x].Units):
+                Domoticz.Log(
+                    "Loading Devices[%s].Units[%s]: %s"
+                    % (x, y, Devices[x].Units[y].Name)
+                )
+
 
 
 def get_widget_attributes(self, Devices, DeviceId, Unit, Attribute=None):
