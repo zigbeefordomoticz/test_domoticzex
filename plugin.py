@@ -113,7 +113,7 @@ class BasePlugin:
     def onCommand_Legacy(self, Unit, Command, Level, Color):
         Domoticz.Log("onCommand... Legacy")
 
-    def onDeviceRemoved(self, DeviceID, Unit):
+    def onDeviceRemoved_Ex(self, DeviceID, Unit):
         Domoticz.Log("onDeviceRemoved... Ex")
 
     def onDeviceRemoved_Legacy(self, Unit):
@@ -138,21 +138,21 @@ if domoticzex:
     # Exented
     def onDeviceRemoved(DeviceID, Unit):
         global _plugin
-        _plugin.onDeviceRemoved(DeviceID, Unit)
+        _plugin.onDeviceRemoved_Ex(DeviceID, Unit)
 
     def onCommand(DeviceID, Unit, Command, Level, Hue):
         global _plugin
-        _plugin.onCommand(DeviceID, Unit, Command, Level, Hue)
+        _plugin.onCommand_Ex(DeviceID, Unit, Command, Level, Hue)
 
 else:
     # Legacy
     def onDeviceRemoved(Unit):
         global _plugin
-        _plugin.onDeviceRemoved(Unit)
+        _plugin.onDeviceRemoved_Legacy(Unit)
 
     def onCommand(Unit, Command, Level, Hue):
         global _plugin
-        _plugin.onCommand(Unit, Command, Level, Hue)
+        _plugin.onCommand_Legacy(Unit, Command, Level, Hue)
 
 
 def onConnect(Connection, Status, Description):
