@@ -29,6 +29,13 @@ except:
     import Domoticz
     domoticzex = False
 
+try:
+    if domoticzex:
+        from DomoticzEx import Devices, Images, Parameters, Settings
+    else:
+        from Domoticz import Devices, Images, Parameters, Settings
+except ImportError:
+    pass
 
 from domoTools import get_widget_attributes, write_attribute_device, create_widget
 
