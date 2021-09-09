@@ -133,7 +133,7 @@ if domoticzex:
         global _plugin
         _plugin.onDeviceRemoved(DeviceID, Unit)
 
-    def onCommand(Unit, Command, Level, Hue):
+    def onCommand(DeviceID, Unit, Command, Level, Hue):
         global _plugin
         _plugin.onCommand(DeviceID, Unit, Command, Level, Hue)
 
