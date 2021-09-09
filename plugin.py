@@ -77,6 +77,9 @@ class BasePlugin:
                 + Description
             )
 
+    def onDisconnect( self, Connection):
+        pass
+    
     def onMessage(self, Connection, Data):
         Domoticz.Log("onMessage called for connection: '" + Connection.Name + "'")
 
