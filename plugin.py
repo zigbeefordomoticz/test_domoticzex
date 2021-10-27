@@ -50,15 +50,17 @@ class BasePlugin:
 
         if not domoticzex:
             unit = len(Devices)+1
+            Domoticz.Log("old dz interface")
         else:
             unit = 1
+            Domoticz.Log("new dz interface EX")
 
         deviceid = len(Devices)+1
         create_widget(self, Devices, deviceid, unit)
 
         # Initialise Value
         attribute_dict = {
-            "nValue": 0, 
+            "nValue": 2, 
             "sValue": '1'
         }
         write_attribute_device(self, Devices, str(deviceid), unit, attribute_dict)
@@ -90,31 +92,32 @@ class BasePlugin:
             # Legacy
             for x in Devices:
                 attribute_dict = {
-                    'nValue': 0,
-                    'sValue': str(int(get_widget_attributes(self, Devices, None, x, "sValue")["sValue"]) + 1)
+                    'nValue': 2,
+                    'sValue': str(min(100,int(get_widget_attributes(self, Devices, None, x, "sValue")["sValue"]) + 1))
                 }
                 write_attribute_device(self, Devices, None, x, attribute_dict)
 
         else:
 
             for x in Devices:
-                for y in Devices[x].Units:
-                    Domoticz.Log(
-                        "%s:%s" % (Devices[x].Units[y].nValue, Devices[x].Units[y].sValue)
-                    )
+                #for y in Devices[x].Units:
+                y = 1
+                Domoticz.Log(
+                    "%s:%s" % (Devices[x].Units[y].nValue, Devices[x].Units[y].sValue)
+                )
 
-                    attribute_dict = {
-                        'nValue': 0,
-                        'sValue': str(int(get_widget_attributes(self, Devices, x, y, "sValue")["sValue"]) + 1)
-                    }
+                attribute_dict = {
+                    'nValue': 2,
+                    'sValue': str(min(100,int(get_widget_attributes(self, Devices, x, y, "sValue")["sValue"]) + 1))
+                }
 
-                    write_attribute_device(self, Devices, x, y, attribute_dict)
+                write_attribute_device(self, Devices, x, y, attribute_dict)
 
     def onCommand_Ex(self, DeviceID, Unit, Command, Level, Color):
-        Domoticz.Log("onCommand... Ex")
+        Domoticz.Log("onCommand... Ex: DeviceID:%s, Unit:%s, Command:%s,  Level:%s, Color:%s" %(DeviceID, Unit, Command, Level, Color))
 
     def onCommand_Legacy(self, Unit, Command, Level, Color):
-        Domoticz.Log("onCommand... Legacy")
+        Domoticz.Log("onCommand... Legacy: Unit:%s, Command:%s,  Level:%s, Color:%s" %(Unit, Command, Level, Color))
 
     def onDeviceRemoved_Ex(self, DeviceID, Unit):
         Domoticz.Log("onDeviceRemoved... Ex")
