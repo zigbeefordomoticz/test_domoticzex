@@ -21,7 +21,7 @@ def create_widget(self, Devices , deviceid, unit):
     list_widget( self, Devices )
     if not domoticzex:
         # Legacy
-        Domoticz.Device(Name="Counter_%s" % unit, Unit=unit, Type=113).Create()
+        Domoticz.Device(Name="Counter_%s" % unit, Unit=unit, Type=244, Subtype=73, Switchtype=7 ).Create()
 
     else:
         # Ex
@@ -29,9 +29,20 @@ def create_widget(self, Devices , deviceid, unit):
             Name="Counter_%s" % deviceid,
             DeviceID=str(deviceid),
             Unit=unit,
-            TypeName="Counter",
+            Type=244, 
+            Subtype=73,
+            Switchtype=7
         ).Create()
         Domoticz.Log("Created device: " + Devices[str(deviceid)].Units[unit].Name)
+        Domoticz.Unit(
+            Name="Counter2_%s" % deviceid,
+            DeviceID=str(deviceid),
+            Unit=unit+1,
+            Type=241, 
+            Subtype=4,
+            Switchtype=7
+        ).Create()
+        Domoticz.Log("Created device: " + Devices[str(deviceid)].Units[unit+1].Name)
 
 
 
