@@ -152,4 +152,8 @@ def write_attribute_device(self, Devices, DeviceId, Unit, attribute_dict):
     else:
         Devices[DeviceId].Units[Unit].nValue = attribute_dict["nValue"]
         Devices[DeviceId].Units[Unit].sValue = attribute_dict["sValue"]
+        if "Battery" in attribute_dict:
+        	Devices[DeviceId].Units[Unit].BatteryLevel = attribute_dict["Battery"]
+        if "SignalLevel" in attribute_dict:
+        	Devices[DeviceId].Units[Unit].SignalLevel = attribute_dict["SignalLevel"]        	
         Devices[DeviceId].Units[Unit].Update(Log=True)
