@@ -37,7 +37,7 @@ try:
 except ImportError:
     pass
 
-from domoTools import get_widget_attributes, write_attribute_device, create_widget
+from domoTools import get_widget_attributes, write_attribute_device, create_widget, set_timedout_device
 import random
 
 
@@ -105,6 +105,11 @@ class BasePlugin:
             for x in Devices:
                 #for y in Devices[x].Units:
                 y = 1
+                if random.randint(0,4) == 2:
+                	set_timedout_device(self, Devices, x, y, timedout=True)
+                else:
+                	set_timedout_device(self, Devices, x, y, timedout=False)
+                
                 Domoticz.Log(
                     "%s:%s" % (Devices[x].Units[y].nValue, Devices[x].Units[y].sValue)
                 )
