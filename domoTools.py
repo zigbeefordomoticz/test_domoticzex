@@ -105,13 +105,14 @@ def get_widget_attributes(self, Devices, DeviceId, Unit, Attribute=None):
             elif x == "Color":
                 return_dict[x] = Devices[DeviceId].Units[Unit].Color
             elif x == "TimedOut":
-                return_dict[x] = Devices[DeviceId].Units[Unit].TimedOut
+                return_dict[x] = Devices[DeviceId].TimedOut
     Domoticz.Log("get_widget_attributes: %s" % str(return_dict))
     return return_dict
 
 
 def set_timedout_device(self, Devices, DeviceId, Unit, timedout):
     widget_attribute = get_widget_attributes(self, Devices, DeviceId, Unit)
+    Domoticz.Log("set_timedout_device %s" %str(timedout))
     if not domoticzex:
         # Legacy
 
@@ -122,9 +123,8 @@ def set_timedout_device(self, Devices, DeviceId, Unit, timedout):
         )
     else:
         # Ex
-        Devices[DeviceId].Units[Unit].nValue = widget_attribute["nValue"]
-        Devices[DeviceId].Units[Unit].sValue = widget_attribute["sValue"]
-        Devices[DeviceId].Units[Unit].Update(Log=True)
+        Devices[DeviceId].TimedOut = timedout
+        # Devices[DeviceId].Units[Unit].Update(Log=True)
 
 
 def set_lastseen_device(self, Devices, DeviceId, Unit):
