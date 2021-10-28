@@ -38,6 +38,7 @@ except ImportError:
     pass
 
 from domoTools import get_widget_attributes, write_attribute_device, create_widget
+import random
 
 
 class BasePlugin:
@@ -93,7 +94,9 @@ class BasePlugin:
             for x in Devices:
                 attribute_dict = {
                     'nValue': 2,
-                    'sValue': str(min(100,int(get_widget_attributes(self, Devices, None, x, "sValue")["sValue"]) + 1))
+                    'sValue': str(min(100,int(get_widget_attributes(self, Devices, None, x, "sValue")["sValue"]) + 1)),
+                    'Battery': random.randint(0,100),
+                    'SignalLevel' : random.randint(0,12)
                 }
                 write_attribute_device(self, Devices, None, x, attribute_dict)
 
@@ -108,7 +111,9 @@ class BasePlugin:
 
                 attribute_dict = {
                     'nValue': 2,
-                    'sValue': str(min(100,int(get_widget_attributes(self, Devices, x, y, "sValue")["sValue"]) + 1))
+                    'sValue': str(min(100,int(get_widget_attributes(self, Devices, x, y, "sValue")["sValue"]) + 1)),
+                    'Battery': random.randint(0,100),
+                    'SignalLevel' : random.randint(0,12)
                 }
 
                 write_attribute_device(self, Devices, x, y, attribute_dict)
