@@ -17,6 +17,10 @@ The principle is create an abstract layer above the Python framework. It will th
 
 ## Domoticz Devices Acess
 
+* DeviceID
+* TimedOut
+* Units
+
 ### Domoticz Devices > Unit
 
 `Domoticz.Log(Devices["123456"].Units[2].Name)`
@@ -36,8 +40,10 @@ The principle is create an abstract layer above the Python framework. It will th
 * LastUpdate
 * Description
 * Color
-* Adjustment   __new in the DomoticzEx__
-* TimeOut
+* Adjustment &nbsp;&nbsp;&nbsp;&nbsp;    __new in the DomoticzEx__ &nbsp;&nbsp;(temperature...)
+* Multiplier &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;   __new in the DomoticzEx__
+* Parent    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;    __new in the DomoticzEx__
+
 
 ## Abstract methods
 
