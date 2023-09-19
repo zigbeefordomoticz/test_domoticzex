@@ -16,28 +16,52 @@ LIST_OF_WIDGET_ATTRIBUTES = (
 
 def domo_create_api(self, Devices, Name, DeviceID, Unit, Type, Subtype, Switchtype, Option=None):
     
-    Domoticz.Log("domo_create_api(Name:%s, DeviceID:%s, Unit:%s, Type:%s, Subtype:%s, Switchtype:%s, Option:%s)" %(
+    Domoticz.Log("domo_create_api(Name: %s, DeviceID: %s, Unit: %s, Type: %s, Subtype: %s, Switchtype: %s, Option: %s)" %(
         Name, DeviceID, Unit, Type, Subtype, Switchtype, Option ))
     
     list_widget( self, Devices )
     if domoticzex:
         myDev = Domoticz.Unit( Name=Name, DeviceID=DeviceID, Unit=Unit, Type=Type, Subtype=Subtype, Switchtype=Switchtype)
         myDev.Create()
-        Domoticz.Log("Extended Device %s Created!" %str(myDev))
+        return myDev.ID
     else:
         # Legacy
         myDev = Domoticz.Device(Name=Name, Unit=Unit, Type=Type, Subtype=Subtype, Switchtype=Switchtype )
         myDev.Create()
-        Domoticz.Log("legacy Device %s Created!" %str(myDev))
+        Domoticz.Log("Extended Device %s Created!" %str(Devices[DeviceID].Units[Unit].ID))
+        return Devices[DeviceID].Units[Unit].ID
+
+
+def find_widget_unit(self, Devices, WidgetID ):
+    # Should be used in domoMaj, when looking for the 'DeviceUnit'
+    # In legacy 'DeviceUnit' will be a Number, while in Extended, it will be a Tupple of DeviceID and Unit
+    
+    for x in list(Devices):
+        if domoticzex:
+            for y in list(Devices[x].Units):
+                if Devices[x].Units[y].ID == int(WidgetID):
+                    return ( x, y )
+
+        elif Devices[x].ID == int(WidgetID):
+            return x
+    return None
+
         
 def create_widget(self, Devices , deviceid, unit):
     
     Domoticz.Log("create_widget( deviceid: %s, unit: %s)" %(deviceid, unit))
 
-    myDev = domo_create_api(self, Devices, Name="Counter_%s" % unit, DeviceID=str(deviceid), Unit=unit, Type=244, Subtype=73, Switchtype=7 )
+    _name = "Counter_%s" % unit
+    if domoticzex:
+        _name += '_Ext'
+        
+    myDev = domo_create_api(self, Devices, Name=_name, DeviceID=str(deviceid), Unit=unit, Type=244, Subtype=73, Switchtype=7 )
+    Domoticz.Log("  - %s created! %s" %(_name, myDev))
     if domoticzex:
         unit += 1
-        myDev = domo_create_api(self, Devices, Name="Counter_%s" % unit, DeviceID=str(deviceid), Unit=unit, Type=244, Subtype=73, Switchtype=7 )
+        _name = "Counter_%s_Ext" % unit
+        myDev = domo_create_api(self, Devices, Name=_name, DeviceID=str(deviceid), Unit=unit, Type=244, Subtype=73, Switchtype=7 )
+        Domoticz.Log("  - %s created! %s" %(_name, myDev))
         
 
 def list_widget( self, Devices ):
@@ -45,6 +69,7 @@ def list_widget( self, Devices ):
     for x in list(Devices):
         if not domoticzex:
             Domoticz.Log( "Loading Devices[%s]: %s" % (x, Devices[x].Name) )
+
         else:
             for y in list(Devices[x].Units):
                 Domoticz.Log( "Loading Devices[%s].Units[%s]: %s" % (x, y, Devices[x].Units[y].Name) )
@@ -63,6 +88,7 @@ def get_widget_attributes(self, Devices, DeviceId, Unit, Attribute=None):
         list_attributes = (Attribute,)
 
     for x in list_attributes:
+        Domoticz.Log("-- attribute: %s" %x)
         if domoticzex:
             if x == "Battery":
                 return_dict[x] = Devices[DeviceId].Units[Unit].BatteryLevel

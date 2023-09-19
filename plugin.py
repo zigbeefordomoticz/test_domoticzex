@@ -29,7 +29,6 @@ except Exception:
     import Domoticz
     domoticzex = False
 
-
 try:
     if domoticzex:
         from DomoticzEx import Devices, Images, Parameters, Settings
@@ -39,7 +38,7 @@ except ImportError:
     pass
 
 
-from domoTools import get_widget_attributes, write_attribute_device, create_widget, set_timedout_device
+from domoTools import get_widget_attributes, write_attribute_device, create_widget, set_timedout_device, find_widget_unit
 import random
 
 
@@ -90,6 +89,10 @@ class BasePlugin:
 
     def onHeartbeat(self):
         Domoticz.Log("Heartbeating... ")
+        
+        
+        widget_unit = find_widget_unit(self, Devices, "17" )
+        Domoticz.Log( "Found Domoticz widget 17 idx: %s" %str( widget_unit))
 
         if not domoticzex:
             # Legacy
@@ -104,20 +107,16 @@ class BasePlugin:
                     'SignalLevel' : random.randint(0,12)
                 }
                 write_attribute_device(self, Devices, None, x, attribute_dict)
-
-        else:
-
-            for x in Devices:
-                #for y in Devices[x].Units:
-                y = 1
+            return
+        
+        for x in Devices:
+            for y in Devices[x].Units:
                 if random.randint(0,4) == 2:
                     set_timedout_device(self, Devices, x, y, timedout=True)
                 else:
                     set_timedout_device(self, Devices, x, y, timedout=False)
                 
-                Domoticz.Log(
-                    "%s:%s" % (Devices[x].Units[y].nValue, Devices[x].Units[y].sValue)
-                )
+                Domoticz.Log( "%s:%s" % (Devices[x].Units[y].nValue, Devices[x].Units[y].sValue) )
                 prev_value = get_widget_attributes(self, Devices, x, y, "sValue")['sValue']
                 if prev_value == '':
                     prev_value = '0'
