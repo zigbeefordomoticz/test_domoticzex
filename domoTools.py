@@ -1,10 +1,9 @@
 try:
     import DomoticzEx as Domoticz
     domoticzex = True
-except:
+except Exception:
     import Domoticz
     domoticzex = False
-
 
 LIST_OF_WIDGET_ATTRIBUTES = (
     "nValue",
@@ -15,59 +14,40 @@ LIST_OF_WIDGET_ATTRIBUTES = (
     "TimedOut",
 )
 
-
-def create_widget(self, Devices , deviceid, unit):
-
+def domo_create_api(self, Devices, Name, DeviceID, Unit, Type, Subtype, Switchtype, Option=None):
+    
+    Domoticz.Log("domo_create_api(Name:%s, DeviceID:%s, Unit:%s, Type:%s, Subtype:%s, Switchtype:%s, Option:%s)" %(
+        Name, DeviceID, Unit, Type, Subtype, Switchtype, Option ))
+    
     list_widget( self, Devices )
-    if not domoticzex:
-        # Legacy
-        myDev = Domoticz.Device(Name="Counter_%s" % unit, Unit=unit, Type=244, Subtype=73, Switchtype=7 )
+    if domoticzex:
+        myDev = Domoticz.Unit( Name=Name, DeviceID=DeviceID, Unit=Unit, Type=Type, Subtype=Subtype, Switchtype=Switchtype)
         myDev.Create()
-        Domoticz.Log("Creating legacy Device %s" %str(myDev))
-
+        Domoticz.Log("Extended Device %s Created!" %str(myDev))
     else:
-        # Ex
-        myDev1 = Domoticz.Unit(
-            Name="Counter_%s" % deviceid,
-            DeviceID=str(deviceid),
-            Unit=unit,
-            Type=244, 
-            Subtype=73,
-            Switchtype=7
-        ).Create()
-        Domoticz.Log("Created device: " + Devices[str(deviceid)].Units[unit].Name)
-        myDev2 = Domoticz.Unit(
-            Name="Counter2_%s" % deviceid,
-            DeviceID=str(deviceid),
-            Unit=unit+1,
-            Type=241, 
-            Subtype=4,
-            Switchtype=7
-        ).Create()
-        Domoticz.Log("Created device: " + Devices[str(deviceid)].Units[unit+1].Name)
+        # Legacy
+        myDev = Domoticz.Device(Name=Name, Unit=Unit, Type=Type, Subtype=Subtype, Switchtype=Switchtype )
+        myDev.Create()
+        Domoticz.Log("legacy Device %s Created!" %str(myDev))
         
-        Domoticz.Log("%s and %s Extended Device created" %(str(myDev1), str(myDev2)))
+def create_widget(self, Devices , deviceid, unit):
+    
+    Domoticz.Log("create_widget( deviceid: %s, unit: %s)" %(deviceid, unit))
 
-
-
+    myDev = domo_create_api(self, Devices, Name="Counter_%s" % unit, DeviceID=str(deviceid), Unit=unit, Type=244, Subtype=73, Switchtype=7 )
+    if domoticzex:
+        unit += 1
+        myDev = domo_create_api(self, Devices, Name="Counter_%s" % unit, DeviceID=str(deviceid), Unit=unit, Type=244, Subtype=73, Switchtype=7 )
+        
 
 def list_widget( self, Devices ):
 
-    if not domoticzex:
-        # Legacy
-        for x in list(Devices):
-            Domoticz.Log(
-                "Loading Devices[%s]: %s"
-                % (x, Devices[x].Name)
-            )
-    else:
-        # Ex
-        for x in list(Devices):
+    for x in list(Devices):
+        if not domoticzex:
+            Domoticz.Log( "Loading Devices[%s]: %s" % (x, Devices[x].Name) )
+        else:
             for y in list(Devices[x].Units):
-                Domoticz.Log(
-                    "Loading Devices[%s].Units[%s]: %s"
-                    % (x, y, Devices[x].Units[y].Name)
-                )
+                Domoticz.Log( "Loading Devices[%s].Units[%s]: %s" % (x, y, Devices[x].Units[y].Name) )
 
 
 
@@ -82,36 +62,32 @@ def get_widget_attributes(self, Devices, DeviceId, Unit, Attribute=None):
     else:
         list_attributes = (Attribute,)
 
-    if not domoticzex:
-        # Legacy
-        for x in list_attributes:
-            if x == "sValue":
-                return_dict[x] = Devices[Unit].sValue
-            elif x == "nValue":
-                return_dict[x] = Devices[Unit].nValue
-            elif x == "Battery":
-                return_dict[x] = Devices[Unit].BatteryLevel
-            elif x == "SignalLevel":
-                return_dict[x] = Devices[Unit].SignalLevel
-            elif x == "Color":
-                return_dict[x] = Devices[Unit].Color
-            elif x == "TimedOut":
-                return_dict[x] = Devices[Unit].TimedOut
-    else:
-        # Ex
-        for x in list_attributes:
-            if x == "sValue":
-                return_dict[x] = Devices[DeviceId].Units[Unit].sValue
-            elif x == "nValue":
-                return_dict[x] = Devices[DeviceId].Units[Unit].nValue
-            elif x == "Battery":
+    for x in list_attributes:
+        if domoticzex:
+            if x == "Battery":
                 return_dict[x] = Devices[DeviceId].Units[Unit].BatteryLevel
-            elif x == "SignalLevel":
-                return_dict[x] = Devices[DeviceId].Units[Unit].SignalLevel
             elif x == "Color":
                 return_dict[x] = Devices[DeviceId].Units[Unit].Color
+            elif x == "SignalLevel":
+                return_dict[x] = Devices[DeviceId].Units[Unit].SignalLevel
             elif x == "TimedOut":
                 return_dict[x] = Devices[DeviceId].TimedOut
+            elif x == "nValue":
+                return_dict[x] = Devices[DeviceId].Units[Unit].nValue
+            elif x == "sValue":
+                return_dict[x] = Devices[DeviceId].Units[Unit].sValue
+        elif x == "Battery":
+            return_dict[x] = Devices[Unit].BatteryLevel
+        elif x == "Color":
+            return_dict[x] = Devices[Unit].Color
+        elif x == "SignalLevel":
+            return_dict[x] = Devices[Unit].SignalLevel
+        elif x == "TimedOut":
+            return_dict[x] = Devices[Unit].TimedOut
+        elif x == "nValue":
+            return_dict[x] = Devices[Unit].nValue
+        elif x == "sValue":
+            return_dict[x] = Devices[Unit].sValue
     Domoticz.Log("get_widget_attributes: %s" % str(return_dict))
     return return_dict
 

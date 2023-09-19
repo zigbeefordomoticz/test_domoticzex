@@ -25,9 +25,10 @@ try:
     import DomoticzEx as Domoticz
     domoticzex = True
 
-except:
+except Exception:
     import Domoticz
     domoticzex = False
+
 
 try:
     if domoticzex:
@@ -51,13 +52,13 @@ class BasePlugin:
         Domoticz.Log("onStart...")
 
         if not domoticzex:
-            unit = len(Devices)+1
+            unit = len(Devices) + 1
             Domoticz.Log("old dz interface")
         else:
             unit = 1
             Domoticz.Log("new dz interface EX")
 
-        deviceid = len(Devices)+1
+        deviceid = len(Devices) + 2
         create_widget(self, Devices, deviceid, unit)
 
         # Initialise Value
@@ -117,7 +118,7 @@ class BasePlugin:
                 Domoticz.Log(
                     "%s:%s" % (Devices[x].Units[y].nValue, Devices[x].Units[y].sValue)
                 )
-                prev_value = get_widget_attributes(self, Devices,  x, y, "sValue")['sValue']
+                prev_value = get_widget_attributes(self, Devices, x, y, "sValue")['sValue']
                 if prev_value == '':
                     prev_value = '0'
 
