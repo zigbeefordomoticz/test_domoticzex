@@ -15,6 +15,8 @@ LIST_OF_WIDGET_ATTRIBUTES = (
 )
 
 def domo_create_api(self, Devices, Name, DeviceID, Unit, Type, Subtype, Switchtype, Option=None):
+    # Should be used in domoCreate
+    # to substitute the Create() and Unit() calls
     
     Domoticz.Log("domo_create_api(Name: %s, DeviceID: %s, Unit: %s, Type: %s, Subtype: %s, Switchtype: %s, Option: %s)" %(
         Name, DeviceID, Unit, Type, Subtype, Switchtype, Option ))
