@@ -37,6 +37,7 @@ try:
 except ImportError:
     pass
 
+
 from domoTools import get_widget_attributes, write_attribute_device, create_widget, set_timedout_device
 import random
 
@@ -92,9 +93,12 @@ class BasePlugin:
         if not domoticzex:
             # Legacy
             for x in Devices:
+                prev_value = get_widget_attributes(self, Devices, None, x, "sValue")["sValue"]
+                if prev_value == '':
+                    prev_value = '0'
                 attribute_dict = {
                     'nValue': 2,
-                    'sValue': str(min(100,int(get_widget_attributes(self, Devices, None, x, "sValue")["sValue"]) + 1)),
+                    'sValue': str(min(100,int(prev_value) + 1)),
                     'Battery': random.randint(0,100),
                     'SignalLevel' : random.randint(0,12)
                 }
@@ -106,17 +110,20 @@ class BasePlugin:
                 #for y in Devices[x].Units:
                 y = 1
                 if random.randint(0,4) == 2:
-                	set_timedout_device(self, Devices, x, y, timedout=True)
+                    set_timedout_device(self, Devices, x, y, timedout=True)
                 else:
-                	set_timedout_device(self, Devices, x, y, timedout=False)
+                    set_timedout_device(self, Devices, x, y, timedout=False)
                 
                 Domoticz.Log(
                     "%s:%s" % (Devices[x].Units[y].nValue, Devices[x].Units[y].sValue)
                 )
+                prev_value = get_widget_attributes(self, Devices,  x, y, "sValue")['sValue']
+                if prev_value == '':
+                    prev_value = '0'
 
                 attribute_dict = {
                     'nValue': 2,
-                    'sValue': str(min(100,int(get_widget_attributes(self, Devices, x, y, "sValue")["sValue"]) + 1)),
+                    'sValue': str(min(100,int(prev_value) + 1)),
                     'Battery': random.randint(0,100),
                     'SignalLevel' : random.randint(0,12)
                 }

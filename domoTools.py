@@ -21,11 +21,13 @@ def create_widget(self, Devices , deviceid, unit):
     list_widget( self, Devices )
     if not domoticzex:
         # Legacy
-        Domoticz.Device(Name="Counter_%s" % unit, Unit=unit, Type=244, Subtype=73, Switchtype=7 ).Create()
+        myDev = Domoticz.Device(Name="Counter_%s" % unit, Unit=unit, Type=244, Subtype=73, Switchtype=7 )
+        myDev.Create()
+        Domoticz.Log("Creating legacy Device %s" %str(myDev))
 
     else:
         # Ex
-        Domoticz.Unit(
+        myDev1 = Domoticz.Unit(
             Name="Counter_%s" % deviceid,
             DeviceID=str(deviceid),
             Unit=unit,
@@ -34,7 +36,7 @@ def create_widget(self, Devices , deviceid, unit):
             Switchtype=7
         ).Create()
         Domoticz.Log("Created device: " + Devices[str(deviceid)].Units[unit].Name)
-        Domoticz.Unit(
+        myDev2 = Domoticz.Unit(
             Name="Counter2_%s" % deviceid,
             DeviceID=str(deviceid),
             Unit=unit+1,
@@ -43,6 +45,8 @@ def create_widget(self, Devices , deviceid, unit):
             Switchtype=7
         ).Create()
         Domoticz.Log("Created device: " + Devices[str(deviceid)].Units[unit+1].Name)
+        
+        Domoticz.Log("%s and %s Extended Device created" %(str(myDev1), str(myDev2)))
 
 
 
@@ -68,6 +72,8 @@ def list_widget( self, Devices ):
 
 
 def get_widget_attributes(self, Devices, DeviceId, Unit, Attribute=None):
+    
+    Domoticz.Log("get_widget_attributes(%s %s %s" %(DeviceId, Unit, Attribute))
 
     return_dict = {}
 
@@ -153,7 +159,7 @@ def write_attribute_device(self, Devices, DeviceId, Unit, attribute_dict):
         Devices[DeviceId].Units[Unit].nValue = attribute_dict["nValue"]
         Devices[DeviceId].Units[Unit].sValue = attribute_dict["sValue"]
         if "Battery" in attribute_dict:
-        	Devices[DeviceId].Units[Unit].BatteryLevel = attribute_dict["Battery"]
+            Devices[DeviceId].Units[Unit].BatteryLevel = attribute_dict["Battery"]
         if "SignalLevel" in attribute_dict:
-        	Devices[DeviceId].Units[Unit].SignalLevel = attribute_dict["SignalLevel"]        	
+            Devices[DeviceId].Units[Unit].SignalLevel = attribute_dict["SignalLevel"]            
         Devices[DeviceId].Units[Unit].Update(Log=True)
